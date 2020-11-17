@@ -30,8 +30,8 @@ leg_mass = 5 ; % define the mass of the structure (kg)
 % leg:0.02211(kg*m^2)
 % motor inertia is small enough to be neglected
 
-mu_s = 0.6; % define the equivalent static friction constant between the wheel and the ground 
-mu_k = 0.5; % define the equivalent dynamic friction constant
+mu_s = 1.0; % define the equivalent static friction constant between the wheel and the ground 
+mu_k = 0.9; % define the equivalent dynamic friction constant
 
 record_data_row_index = 1;
 analysis_data_row_index = 1; % index for recording one point, with varying initial theta
@@ -55,7 +55,7 @@ theta_initial_assigned_deg_array = 0:10:179;  % 18 points
 
 size_theta_initial_array = size(theta_initial_assigned_deg_array, 2);
 
-forward_vel_goal = 0.4; % define forward velocity
+forward_vel_goal = 0.2; % define forward velocity
 
 % initialize data_record
 record_data = double.empty(0,14);
@@ -76,7 +76,8 @@ landscpae_var.x_partition_diff = 0.001; % define the resolution of the gound
 
 landscpae_var.level_num = 8;
 
-level_height_array = 0.05:0.005:0.15;
+level_height_array = 0.45:0.05:1.5;  % Lh/R normalize 0.05:0.005:0.15
+
 % level_height_array = 0.1:0.1;
 size_size_level_height_array = size(level_height_array,2);
 
@@ -85,6 +86,7 @@ total_loop_iteration = size_size_level_height_array * size_theta_initial_array *
 landscpae_var.mu_s = mu_s;
 landscpae_var.mu_k = mu_k;
 fprintf('(Fs, Fk) = (%.1f, %.1f)\n',mu_s, mu_k);
+fprintf('Vf = %.1f (m/s)\n',forward_vel_goal);
 
 for trajectory_mode = mode_array  
     % 1:constant omega, constant dr = 0, wheel mode 
