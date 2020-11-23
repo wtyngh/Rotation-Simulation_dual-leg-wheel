@@ -1,25 +1,42 @@
+% Modified on 11/23/2020
+
 clear variables;clc;close all;
 %% plot stair critical point
 clear variables;clc;close all;
 
+% ==== Single leg-wheel model ====
+% data = [
+% 0.2	1	0.9	0.090 	0.120 ;
+% 0.2	0.9	0.8	0.085 	0.120 ;
+% 0.2	0.8	0.7	0.085 	0.115 ;
+% 0.2	0.7	0.6	0.085 	0.110 ;
+% 0.2	0.6	0.5	0.085 	0.105 ;
+% 
+% 0.4	1	0.9	0.095 	0.130 ;
+% 0.4	0.9	0.8	0.090 	0.130 ;
+% 0.4	0.8	0.7	0.085 	0.125 ;
+% 0.4	0.7	0.6	0.085 	0.120 ;
+% 0.4	0.6	0.5	0.085 	0.115 ;
+% ];
+
+% ==== Dual leg-wheel model  with Lh normalization====
 data = [
-0.2	1	0.9	0.090 	0.120 ;
-0.2	0.9	0.8	0.085 	0.120 ;
-0.2	0.8	0.7	0.085 	0.115 ;
-0.2	0.7	0.6	0.085 	0.110 ;
-0.2	0.6	0.5	0.085 	0.105 ;
+0.2	1	0.9	0.773 	1.227 	0.864 ;
+0.2	0.9	0.8	0.773 	1.227 	0.818 ;
+0.2	0.8	0.7	0.727 	1.227 	0.818 ;
+0.2	0.7	0.6	0.727 	1.182 	0.773 ;
+0.2	0.6	0.5	0.727 	1.136   0.773 ;
 
-0.4	1	0.9	0.095 	0.130 ;
-0.4	0.9	0.8	0.090 	0.130 ;
-0.4	0.8	0.7	0.085 	0.125 ;
-0.4	0.7	0.6	0.085 	0.120 ;
-0.4	0.6	0.5	0.085 	0.115 ;
-
+0.4	1	0.9	0.909 	1.273 	1.227 ;
+0.4	0.9	0.8	0.864 	1.227 	1.045 ;
+0.4	0.8	0.7	0.773 	1.227 	1.000 ;
+0.4	0.7	0.6	0.773 	1.227 	0.955 ;
+0.4	0.6	0.5	0.773 	1.182 	0.955 ;
 ];
 
 data(:,6) = data(:,5) - data(:,4); %for ploting area 
 
-drawing_mode = 1; 
+drawing_mode = 2; 
 % 1:draw the two critical point plots of differernt V together 
 % 2:draw the critical point plot V = 0.2 m/s and the corresponding point of the stairs 
   
@@ -30,6 +47,10 @@ x2 = [x', fliplr(x')];
 title_fontsize = 7;
 axis_fontsize = 7;
 legend_fontsize = 6.5;
+
+x_lim = [0.6 1.0];
+y_lim = [0.0 1.4];
+y_tick = 0:0.2:1.4;
 
 if drawing_mode == 1
     
@@ -53,16 +74,16 @@ if drawing_mode == 1
 
     grid on;
     box on;
-    xlim ([0.6 1.0]);
-    ylim ([0 0.14]);
+    xlim (x_lim);
+    ylim (y_lim);
 
 
 
-    title('\mu_s vs L_h , V = 0.2 [m/s]','fontsize',title_fontsize);
+    title('\mu_s vs L_h , V = 0.2 (m/s)','fontsize',title_fontsize);
     xlabel('\mu_s' ,'fontsize',axis_fontsize);
-    ylabel('L_h [m]','fontsize',axis_fontsize);
+    ylabel('L_h (m/m)','fontsize',axis_fontsize);
 
-    set(gca,'Xtick',0.6:0.1:1.0,'Ytick',0:0.02:0.18,'fontsize',axis_fontsize);
+    set(gca,'Xtick',0.6:0.1:1.0,'Ytick',y_tick,'fontsize',axis_fontsize);
 
     %%
     subplot(1,2,2)
@@ -82,17 +103,17 @@ if drawing_mode == 1
 
     grid on;
     box on;
-    xlim ([0.6 1.0]);
-    ylim ([0 0.14]);
+    xlim (x_lim);
+    ylim (y_lim);
 
-    title('\mu_s vs L_h , V = 0.4 [m/s]','fontsize',title_fontsize);
+    title('\mu_s vs L_h , V = 0.4 (m/s)','fontsize',title_fontsize);
     xlabel('\mu_s' ,'fontsize',axis_fontsize);
-    ylabel('L_h [m]','fontsize',axis_fontsize);
+    ylabel('L_h (m/m)','fontsize',axis_fontsize);
 
-    set(gca,'Xtick',0.6:0.1:1.0,'Ytick',0:0.02:0.18,'fontsize',axis_fontsize);
+    set(gca,'Xtick',0.6:0.1:1.0,'Ytick',y_tick,'fontsize',axis_fontsize);
 
     %%
-    lgd = legend({'Wheel OP zone','leg OP zone','L_{h,max,wheeled}','L_{h,max,legged}'},...
+    lgd = legend({'Wheeled SOZ','legged SOZ','L_{h,max,wheeled}','L_{h,max,legged}'},...
                 'location','southeast');
     lgd.FontSize = legend_fontsize;
 
@@ -117,25 +138,27 @@ else
 
     grid on;
     box on;
-    xlim ([0.6 1.0]);
-    ylim ([0 0.14]);
+    xlim (x_lim);
+    ylim (y_lim);
 
 
 
-    title('\mu_s vs L_h , V = 0.2 [m/s]','fontsize',title_fontsize);
+    title('\mu_s vs L_h , V = 0.2 (m/s)','fontsize',title_fontsize);
     xlabel('\mu_s' ,'fontsize',axis_fontsize);
-    ylabel('L_h [m]','fontsize',axis_fontsize);
+    ylabel('L_h (m/m)','fontsize',axis_fontsize);
 
-    set(gca,'Xtick',0.6:0.1:1.0,'Ytick',0:0.02:0.18,'fontsize',axis_fontsize);
+    set(gca,'Xtick',0.6:0.1:1.0,'Ytick',y_tick,'fontsize',axis_fontsize);
     
-    plot(1,0.1,'x','Color','r','linewidth',1.5);
-    line([0 1],[0.1 0.1],'Color','r','LineStyle',':','linewidth',1.5);
-    line([1 1],[0 0.1],'Color','r','LineStyle',':','linewidth',1.5);
+    
+    stair_con = [1 0.1/0.11];
+    plot(stair_con(1),stair_con(2),'x','Color','r','linewidth',1.5);
+    line([0 stair_con(1)],[stair_con(2) stair_con(2)],'Color','r','LineStyle',':','linewidth',1.5);
+    line([stair_con(1) stair_con(1)],[0 stair_con(2)],'Color','r','LineStyle',':','linewidth',1.5);
     
     
 
     %%
-    lgd = legend({'Wheel OP zone','leg OP zone','L_{h,max,wheeled}','L_{h,max,legged}','Stairs condition'},...
+    lgd = legend({'Wheeled SOZ','legged SOZ','L_{h,max,wheeled}','L_{h,max,legged}','Stairs condition'},...
                 'location','southeast');
     lgd.FontSize = legend_fontsize;
 end
