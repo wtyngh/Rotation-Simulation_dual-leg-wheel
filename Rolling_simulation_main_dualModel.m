@@ -9,7 +9,7 @@
 % Concentric dual model
 % Position control, input 'time-theta, time-r' trajectory
 %
-% Last advised : 2020/09/03
+% Last advised : 2020/11/23
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % opengl info
