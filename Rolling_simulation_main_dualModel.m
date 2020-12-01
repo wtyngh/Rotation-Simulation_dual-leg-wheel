@@ -18,7 +18,7 @@
 clear variables; clc; close all;
 timer_total = tic;
 
-trajectory_mode = 2;  
+trajectory_mode = 3;  
 % 1:constant omega, constant dr = 0, wheel mode 
 % 2:constant omega, constant dr = 0.045, legged mode 
 % 3:assigned trajectory, CPG trajectory, Trot
@@ -38,12 +38,12 @@ mu_k = 0.9; % define the equivalent dynamic friction constant
 
 mass_force = [0 -(leg_mass*9.8)];
 %% Settings 
-enable.video = 1;  % switch to 1 to enable video recording
+enable.video = 0;  % switch to 1 to enable video recording
 
 enable.xls_record = 0;   % switch to 1 to write the data to the excel file
 enable.time_elapsed_print = 1;  % switch to 1 to show the time elapsed of each iteration
 
-enable.plot_procedure = 0; % switch 1 to plot all the procedure
+enable.plot_procedure = 1; % switch 1 to plot all the procedure
     enable.plot_quiver = 1;  % switch to 1 to show the force quiver including mass and reaction force from the ground
     enable.v_a = 1;
 enable.plot_required_torque = 0; % switch 1 to show the required_torque at final plot    
@@ -59,10 +59,10 @@ x_range = [-0.5, 2.5]; % range of the window [-0.5, 4]
 y_range = [-0.2, 0.6];  % [-0.2, 1.0]
 
 window_size = [100 100 1200 500];  % [100 100 1000 500]
-title_fontsize = 12;
-label_fontsize = 12;
-text_fontsize = 12;
-legend_fontsize = 12;
+title_fontsize = 14;
+label_fontsize = 14;
+text_fontsize = 14;
+legend_fontsize = 14;
 outputsize = [9, 3.5];    %[3.5 1.5]; %inches
 
 text_pos.landscape = [x_range(1) + 0.05 , y_range(2) - 0.05];
@@ -75,7 +75,7 @@ hip_joint_initial = [0,0.2];  % initail position of the hip joint
 % hip_joint_initial = [-0.002,0.1169];
 
 % Define forward vel
-forward_vel_goal = 0.2; %m/s
+forward_vel_goal = 0.4; %m/s
 
 % define how much time the leg is going to run (sec)
 t_initial = 0;  % (s)
@@ -117,14 +117,14 @@ switch trajectory_mode
     case {3,4}  % input assigned trajectory, CPG trajectory is used here
         
         % Load trajectory data
-        input_trajectory_data_filename = 'CPG trajectory';
         if trajectory_mode == 3
             input_xlsx_tab_str = ['Trot, V=', num2str(forward_vel_goal)];
         else  % trajectory_mode == 4
             input_xlsx_tab_str = ['Walk, V=', num2str(forward_vel_goal)];     
         end
-
-        input_trajectory_data = xlsread([input_trajectory_data_filename,'.xlsx'],input_xlsx_tab_str);
+        input_trajectory_data_filename = ['CPG ',input_xlsx_tab_str];
+        
+        input_trajectory_data = xlsread(['CPG trajectory','.xlsx'],input_xlsx_tab_str);
         trajectory_t = input_trajectory_data(:,1);
         trajectory_theta = input_trajectory_data(:,2);      
         trajectory_r = input_trajectory_data(:,3);
@@ -199,10 +199,10 @@ switch(landscape_function_index)
         landscape_function = @(x) 0 * x   ;
         landscape_str = 'flat';
     case 3   % Stairs
-        level_height = 0.1;
+        level_height = 0.11;
         landscape_partition = craete_stair_landscape(x_partition, 4, level_height) ;   % 10
         % (x_partition, stair_level, level_height)
-        landscape_str = 'stairs';
+        landscape_str = ['stairs, Lh=',num2str(level_height)];
     case 4   % parabolic
         landscape_function = @(x) 0.9 * (x + 0.1).^2  ;  
         landscape_str = 'parabolic';
@@ -214,7 +214,7 @@ if landscape_function_index ~= 3
     landscape_str_full = [landscape_str,' ',str_landscape_function(5:end)];
     landscape_partition = landscape_function(x_partition);
 else
-    landscape_str_full = [landscape_str,', L_h = ',num2str(level_height),' (m)'];
+    landscape_str_full = ['stairs, L_h = ',num2str(level_height),' (m)'];
     landscape_function = @(x) interp1(x_partition, landscape_partition, x,'linear','extrap');
 end
 landscape_partition_diff = [diff(landscape_partition),0];
@@ -246,14 +246,13 @@ if enable.video == 1
     video_play_frame_rate = 1;
     
     video_filename = ['Dual'...
-                      ', T=',num2str(t_end ),'(s)'...
-                      ', Theta=',num2str(theta_initial*180/pi),'~',num2str(theta_end*180/pi),'(deg)'...
+                      ', ',landscape_str,...
                       ', mu_s=',num2str(mu_s),...
                       ', mu_k=',num2str(mu_k),...
-                      ', ',landscape_str,...
                       ', ',input_trajectory_data_filename,...
-                      ', ',input_xlsx_tab_str,...
                       ', rate=',num2str(video_play_frame_rate),...
+                      ', T=',num2str(t_end),'(s)'...
+                      ', Theta=',num2str(theta_initial*180/pi),'~',num2str(theta_end*180/pi),'(deg)'...
                       '.avi'];
     writerObj = VideoWriter(video_filename);
     writerObj.FrameRate = 1 / t_increment * video_play_frame_rate ;  % set playing frame rate
@@ -598,7 +597,7 @@ for loop_iteration = 1:num_of_iterations
                     ' , \mu_k = ', sprintf('%.1f',mu_k),...
                     ' , ', landscape_str ,...
                     ', ',input_trajectory_data_filename,...
-                    ', ',input_xlsx_tab_str ];
+                    ];
 
         title(title_str, 'fontsize',title_fontsize);
         xlabel('x (m)','FontSize',label_fontsize);
